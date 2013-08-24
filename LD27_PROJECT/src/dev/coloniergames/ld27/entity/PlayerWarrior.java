@@ -7,7 +7,7 @@ public class PlayerWarrior extends PlayerClass {
 	public PlayerWarrior(Player p) {
 		super(p);
 		
-		this.texture = TextureData.entityTextures[1][0];
+		this.textureRow = 0;
 	}
 
 	@Override

@@ -24,7 +24,7 @@ public class PlayerMage extends PlayerClass {
 
 		countdownTimer = new Timer();
 
-		this.texture = TextureData.entityTextures[0][0];
+		this.textureRow = 1;
 	}
 
 	boolean passiveReady = false;
@@ -88,7 +88,11 @@ public class PlayerMage extends PlayerClass {
 	@Override
 	public void spell3() {
 
-		
+		if(s3R) {
+			player.projectiles.add(new Projectile(player.position.x, player.position.y, player.rotation, ProjectileType.LIGHTNING_BALL));
+			countdownTimer.schedule(new Spell3CDTask(), 3000);
+			s3R = false;
+		}
 		
 	}
 

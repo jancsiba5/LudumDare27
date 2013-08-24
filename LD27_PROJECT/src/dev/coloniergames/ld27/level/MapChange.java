@@ -30,7 +30,7 @@ public class MapChange implements Constants {
 		
 		if(eX == x && eY == y) {
 			System.out.println("SHOULD CHANGE MAP!!");
-			Game.changeMap(newMap);
+			Game.requireChange(newMap);
 		}
 		
 	}

@@ -1,5 +1,6 @@
 package dev.coloniergames.ld27.weapon;
 
+import dev.coloniergames.ld27.gfx.Animator;
 import dev.coloniergames.ld27.gfx.Sprite;
 import dev.coloniergames.ld27.util.Vector;
 
@@ -7,7 +8,7 @@ public class Projectile {
 
 	public Vector position;
 	public float rotation;
-	Sprite sprite;
+	Animator sprite;
 	public ProjectileType type;
 	
 	public int ticksAlive = 0;
@@ -19,7 +20,7 @@ public class Projectile {
 		
 		this.type = type;
 		
-		this.sprite = new Sprite(x, y, type.texture, type.width, type.height);
+		this.sprite = new Animator(x, y, type.width, type.height, type.textures, 100);
 		
 	}
 	

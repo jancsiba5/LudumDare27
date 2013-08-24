@@ -11,6 +11,7 @@ import dev.coloniergames.ld27.entity.Entity;
 import dev.coloniergames.ld27.entity.Player;
 import dev.coloniergames.ld27.entity.PlayerMage;
 import dev.coloniergames.ld27.entity.PlayerWarrior;
+import dev.coloniergames.ld27.gfx.Animator;
 import dev.coloniergames.ld27.gfx.Sprite;
 import dev.coloniergames.ld27.level.Map;
 import dev.coloniergames.ld27.level.MapLoader;
@@ -34,6 +35,12 @@ public class Game implements Constants {
 	Random random = new Random();
 
 	float red = 0, redAdd = 0.01f, blue = 1, blueAdd = 0.01f;
+	
+	public static boolean isChangeMapRequired = false;
+	
+	static String toBeLoaded = "";
+	
+	Animator timerAnimator = new Animator(0, 0, 32, 32, TextureData.timerTextures, 1000);
 
 	public Game(){
 		init();
@@ -51,7 +58,7 @@ public class Game implements Constants {
 
 		changeMap("testMap");
 
-		entities.add(player);
+		// entities.add(player);
 
 	}
 
@@ -108,6 +115,10 @@ public class Game implements Constants {
 			entities.removeAll(entitiesToRemove);
 
 			entitiesToRemove.clear();
+		}
+		
+		if(isChangeMapRequired) {
+			changeMap(toBeLoaded);
 		}
 
 	}
@@ -210,6 +221,8 @@ public class Game implements Constants {
 			GL11.glEnd();
 		}
 
+		timerAnimator.draw();
+		
 		fps++;
 
 	}
@@ -217,15 +230,26 @@ public class Game implements Constants {
 	public static void changeMap(String location) {
 
 
-		// entitiesToRemove.addAll(entities);
+		entities.clear();
 
 		Map m = MapLoader.loadMap(location);
 
 		player.moveTo(m.spawnX, m.spawnY);
 
-		// entities.add(player);
+		entities.add(player);
 
 		map = m;
+		
+		isChangeMapRequired = false;
+		
+	}
+	
+	public static void requireChange(String location) {
+		
+		isChangeMapRequired = true;
+		
+		toBeLoaded = location;
+		
 	}
 
 	public long getTime() {
