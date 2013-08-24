@@ -1,0 +1,25 @@
+
+--------------------------------  LUDUM  DARE  27  --------------------------------
+
+THEME: 10 seconds
+
+Valami történik 10 másodpercenként
+Változik minden ilyesmi
+
+10 másodpercenként változik a fõhõs
+top down, sok akció, képességek
+2 ember van belezárva a fõhõsbe, az egyik egy varázsló, kevés élet, spellek
+a másik egy harcos, sok élet, fegyveres ütközetek.
+10 másodpercenként vált az egyikrõl a másikra.
+
+ezt kihasználva lehet csinálni dolgokat vagy nemtom ilyesmi
+
+MAPLOADER BEGIN
+
+	A MapLoader lényege az, hogy fileokból csinál pályát(duh)
+	Képekbõl teszi ezt, kihasználva a 3 csatornát:
+	R: Megadja a Tile textúráját
+	G: Megadja a Tile átjárhatóságát
+	B: Megadja nemtom mit egyellõre
+	
+END
