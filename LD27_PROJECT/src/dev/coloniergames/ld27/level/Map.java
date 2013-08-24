@@ -13,7 +13,9 @@ public class Map implements Constants {
 	Block[][] blocks;
 	List<MapChange> mapChanges = new ArrayList<MapChange>();
 	List<Teleport> teleports = new ArrayList<Teleport>();
-	public Map(int mapW, int mapH, Block[][] blocks, List<MapChange> mapChs, List<Teleport> teles) {
+	
+	public float spawnX, spawnY;
+	public Map(int mapW, int mapH, Block[][] blocks, List<MapChange> mapChs, List<Teleport> teles, int sX, int sY) {
 
 		this.MAP_WIDTH = mapW;
 		this.MAP_W = mapW * BLOCK;
@@ -25,6 +27,9 @@ public class Map implements Constants {
 		
 		this.mapChanges = mapChs;
 		this.teleports = teles;
+		
+		this.spawnX = sX * BLOCK;
+		this.spawnY = sY * BLOCK;
 
 	}
 

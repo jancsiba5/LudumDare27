@@ -36,6 +36,8 @@ public class MapLoader {
 		int mapW = image.getWidth();
 		int mapH = image.getHeight();
 		
+		int sX = 0, sY = 0;
+		
 		Block[][] blocks = new Block[mapW][mapH];
 		
 		List<MapChange> mChs = new ArrayList<MapChange>();
@@ -45,6 +47,8 @@ public class MapLoader {
 				int rgba = image.getRGB(x, y);
 				Color c = new Color(rgba);
 				int red = c.getRed();
+				int green = c.getGreen();
+				int blue = c.getBlue();
 				
 				BlockType type = null;
 				
@@ -52,6 +56,9 @@ public class MapLoader {
 				if(red == BlockType.BLOCK_WALL.r) type = BlockType.BLOCK_WALL;
 				if(red == BlockType.BLOCK_HOUSE_WALL.r) type = BlockType.BLOCK_HOUSE_WALL;
 				if(red == BlockType.BLOCK_FLOOR.r) type = BlockType.BLOCK_FLOOR;
+				if(red == BlockType.BLOCK_WOOD.r) type = BlockType.BLOCK_WOOD;
+				
+				if(green == 100) { sX = x; sY = y; }
 				
 				blocks[x][y] = new Block(x, y, type);
 				
@@ -87,7 +94,7 @@ public class MapLoader {
 			e.printStackTrace();
 		}
 		
-		m = new Map(mapW, mapH, blocks, mChs, teles);
+		m = new Map(mapW, mapH, blocks, mChs, teles, sX, sY);
 		
 		return m;
 	}

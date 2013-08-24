@@ -22,65 +22,66 @@ public class Game implements Constants {
 
 	public static Map map;
 
-	List<Entity> entities = new ArrayList<Entity>();
+	static List<Entity> entities = new ArrayList<Entity>();
+	static List<Entity> entitiesToRemove = new ArrayList<Entity>();
 
-	Player player;
-	
+	static Player player;
+
 	long lastFrame;
-	
+
 	int delta, fpsTimer, gameTimer, fps;
-	
+
 	Random random = new Random();
 
 	float red = 0, redAdd = 0.01f, blue = 1, blueAdd = 0.01f;
-	
+
 	public Game(){
 		init();
 	}
 
 	public void init() {
-		
+
 		lastFrame = getTime();
-		
+
 		delta = getDelta();
 
 		s = new Sprite(50, 50, TextureData.testTexture);
 
-		map = MapLoader.loadMap("testMap");
-
 		player = new Player(0, 0);
+
+		changeMap("testMap");
 
 		entities.add(player);
 
 	}
 
 	public void pollInput() {
-		
+
 		player.pollInput();
-		
+
 	}
 
 	public void tick() {
-		
+
 		delta = getDelta();
-		
+
 		fpsTimer += delta;
 		gameTimer += delta;
-		
+
 		if(fpsTimer >= 1000) {
 			System.out.println("FPS: " + fps);
 			fps = 0;
 			fpsTimer = 0;
 		}
-		
+
 		if(gameTimer >= 10000) {
-			
+
 			player.changeRoles();
-			
+
 			System.out.println("CHANGE!");
-			
+
 			gameTimer = 0;
-			
+
 		}
 
 		// s.rotate(0.01f);
@@ -95,18 +96,24 @@ public class Game implements Constants {
 			e.move();
 
 		}
-		
+
 
 		if(red >= 1) redAdd = -0.001f;
 		if(red <= 0 ) redAdd = 0.001f;
-		
+
 		red += redAdd;
 		blue -= redAdd;
-		
+
+		if(!entitiesToRemove.isEmpty()) {
+			entities.removeAll(entitiesToRemove);
+
+			entitiesToRemove.clear();
+		}
+
 	}
 
 	public void renderGL() {
-		
+
 		GL11.glPushMatrix();
 
 		player.playerCamera.translate();
@@ -120,15 +127,15 @@ public class Game implements Constants {
 		}
 
 		GL11.glPopMatrix();
-		
+
 		GL11.glEnd();
-		
+
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, TextureData.healthBar);
-		
+
 		GL11.glBegin(GL11.GL_QUADS);
-		
+
 		GL11.glColor3f(1, 1, 1);
-		
+
 		GL11.glTexCoord2f(0, 0);
 		GL11.glVertex2f(w / 2 - 84, h - 20);
 		GL11.glTexCoord2f(1, 0);
@@ -137,14 +144,14 @@ public class Game implements Constants {
 		GL11.glVertex2f(w / 2 + 84, h);
 		GL11.glTexCoord2f(0, 1);
 		GL11.glVertex2f(w / 2 - 84, h);
-		
+
 		GL11.glEnd();
-		
+
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, TextureData.healthIcon);
-		
+
 		GL11.glBegin(GL11.GL_QUADS);
 		for(int i = 0; i < player.health; i++) {
-			
+
 			GL11.glTexCoord2f(0, 0);
 			GL11.glVertex2f((w / 2 - 80) + i * 16, h - 18);
 
@@ -156,17 +163,17 @@ public class Game implements Constants {
 
 			GL11.glTexCoord2f(0, 1);
 			GL11.glVertex2f((w / 2 - 80) + i * 16, h - 2);
-			
+
 		}
-		
+
 		GL11.glEnd();
-		
+
 		if(player.playerClass instanceof PlayerMage) {
-			
+
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, TextureData.mageText);
 			GL11.glBegin(GL11.GL_QUADS);
 			GL11.glColor3f(red, random.nextFloat() * 0.3f, blue);
-			
+
 			GL11.glTexCoord2f(0, 0);
 			GL11.glVertex2f(w / 2, 0);
 
@@ -178,16 +185,16 @@ public class Game implements Constants {
 
 			GL11.glTexCoord2f(0, 1);
 			GL11.glVertex2f(w / 2, h / 6);
-			
+
 			GL11.glEnd();
 		}
-		
+
 		if(player.playerClass instanceof PlayerWarrior) {
-			
+
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, TextureData.warriorText);
 			GL11.glBegin(GL11.GL_QUADS);
 			GL11.glColor3f(random.nextFloat() * 0.3f, red, blue);
-			
+
 			GL11.glTexCoord2f(0, 0);
 			GL11.glVertex2f(w / 2, 0);
 
@@ -199,24 +206,37 @@ public class Game implements Constants {
 
 			GL11.glTexCoord2f(0, 1);
 			GL11.glVertex2f(w / 2, h / 6);
-			
+
 			GL11.glEnd();
 		}
-		
+
 		fps++;
 
 	}
 
+	public static void changeMap(String location) {
+
+
+		// entitiesToRemove.addAll(entities);
+
+		Map m = MapLoader.loadMap(location);
+
+		player.moveTo(m.spawnX, m.spawnY);
+
+		// entities.add(player);
+
+		map = m;
+	}
 
 	public long getTime() {
-	    return System.nanoTime() / 1000000;
+		return System.nanoTime() / 1000000;
 	}
-	
+
 	public int getDelta() {
 		long time = getTime();
 		int delta = (int) (time - lastFrame);
 		lastFrame = time;
-		
+
 		return delta;
 	}
 
