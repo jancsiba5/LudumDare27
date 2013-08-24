@@ -1,5 +1,8 @@
 package dev.coloniergames.ld27.level;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import dev.coloniergames.ld27.Constants;
 import dev.coloniergames.ld27.entity.Entity;
 import dev.coloniergames.ld27.entity.Player;
@@ -8,7 +11,11 @@ public class Map implements Constants {
 
 	public int MAP_WIDTH, MAP_W, MAP_HEIGHT, MAP_H;
 	Block[][] blocks;
-	public Map(int mapW, int mapH, Block[][] blocks) {
+	List<MapChange> mapChanges = new ArrayList<MapChange>();
+	List<Teleport> teleports = new ArrayList<Teleport>();
+	
+	public float spawnX, spawnY;
+	public Map(int mapW, int mapH, Block[][] blocks, List<MapChange> mapChs, List<Teleport> teles, int sX, int sY) {
 
 		this.MAP_WIDTH = mapW;
 		this.MAP_W = mapW * BLOCK;
@@ -17,6 +24,12 @@ public class Map implements Constants {
 		this.MAP_H = mapH * BLOCK;
 
 		this.blocks = blocks;
+		
+		this.mapChanges = mapChs;
+		this.teleports = teles;
+		
+		this.spawnX = sX * BLOCK;
+		this.spawnY = sY * BLOCK;
 
 	}
 
@@ -124,6 +137,14 @@ public class Map implements Constants {
 				}
 			}
 		}
+		
+		for(Teleport t : teleports) {
+			t.teleport(e);
+		}
+		
+		for(MapChange mc : mapChanges) {
+			mc.changeMap(e);
+		}
 
 		
 	}
@@ -148,6 +169,13 @@ public class Map implements Constants {
 			}
 		}
 
+		for(Teleport t : teleports) {
+			t.draw();
+		}
+		
+		for(MapChange mc : mapChanges) {
+			mc.draw();
+		}
 	}
 
 }

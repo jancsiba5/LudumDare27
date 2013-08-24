@@ -18,7 +18,7 @@ public class Player extends Entity {
 
 	public Camera playerCamera = new Camera(0, 0, 0);
 
-	public boolean mUp, mDown, mRight, mLeft, mNo, trackCamera;
+	public boolean mUp, mDown, mRight, mLeft, mNo, trackCamera = true;
 
 	public float speed = 0.2f;
 
