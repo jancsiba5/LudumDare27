@@ -46,7 +46,7 @@ public class Game implements Constants {
 
 		s = new Sprite(50, 50, TextureData.testTexture);
 
-		map = MapLoader.loadMap("testMap.png");
+		map = MapLoader.loadMap("testMap");
 
 		player = new Player(0, 0);
 
