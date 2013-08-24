@@ -8,7 +8,7 @@ public abstract class PlayerClass implements Constants {
 	
 	public boolean s1R, s2R, s3R, s4R;
 	public Timer countdownTimer;
-	public int texture;
+	public int textureRow;
 
 	public abstract void attack();
 	public abstract void act(int delta, int gameTimer);

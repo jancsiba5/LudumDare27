@@ -5,8 +5,8 @@ import java.util.List;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
 
+import dev.coloniergames.ld27.gfx.Animator;
 import dev.coloniergames.ld27.gfx.Camera;
 import dev.coloniergames.ld27.gfx.Sprite;
 import dev.coloniergames.ld27.util.TextureData;
@@ -14,7 +14,7 @@ import dev.coloniergames.ld27.weapon.Projectile;
 
 public class Player extends Entity {
 
-	public static Sprite playerSprite = new Sprite(0, 0, TextureData.testTexture, BLOCK / 2, BLOCK / 2);
+	public static Animator playerSprite = new Animator(0, 0, BLOCK / 1.5f, BLOCK / 1.5f, TextureData.entityTextures[0], 200);
 
 	public Camera playerCamera = new Camera(0, 0, 0);
 
@@ -35,7 +35,7 @@ public class Player extends Entity {
 
 		playerClass = new PlayerMage(this);
 		
-		playerSprite.setTexture(playerClass.texture);
+		playerSprite.setAnimationSet(TextureData.entityTextures[playerClass.textureRow]);
 	}
 
 	public void pollInput() {
@@ -148,7 +148,7 @@ public class Player extends Entity {
 			playerClass = new PlayerMage(this);
 		}
 	
-		sprite.setTexture(playerClass.texture);
+		playerSprite.setAnimationSet(TextureData.entityTextures[playerClass.textureRow]);
 	}
 
 	public void draw() {

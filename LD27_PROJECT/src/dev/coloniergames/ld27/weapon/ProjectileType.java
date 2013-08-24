@@ -5,13 +5,13 @@ import dev.coloniergames.ld27.util.TextureData;
 
 public enum ProjectileType implements Constants {
 
-	FIREBALL(0, 0, 2, 1000, 1f, BLOCK / 2, BLOCK / 2);
-	public int textureX, textureY, texture, damage, maxTicks;
+	FIREBALL(0, 2, 1000, 0.1f, BLOCK / 2, BLOCK / 2), LIGHTNING_BALL(1, 3, 1000, 1f, BLOCK / 2, BLOCK / 2);
+	public int row, damage, maxTicks;
+	public int[] textures;
 	public float speed, width, height;
 	
-	ProjectileType(int tX, int tY, int damage, int maxTicks, float speed, float width, float height) {
-		this.textureX = tX;
-		this.textureY = tY;
+	ProjectileType(int tX, int damage, int maxTicks, float speed, float width, float height) {
+		this.row = tX;
 		this.damage = damage;
 		this.maxTicks = maxTicks;
 		
@@ -20,6 +20,6 @@ public enum ProjectileType implements Constants {
 		
 		this.speed = speed;
 		
-		this.texture = TextureData.projectileTextures[tX][tY];
+		this.textures = TextureData.projectileTextures[row];
 	}
 }
