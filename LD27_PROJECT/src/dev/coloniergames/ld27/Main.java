@@ -4,13 +4,12 @@ import java.io.File;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.openal.AL;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 
 import dev.coloniergames.ld27.game.Game;
-import dev.coloniergames.ld27.gfx.Sprite;
-import dev.coloniergames.ld27.util.TextureData;
 
 public class Main implements Constants {
 
@@ -66,6 +65,14 @@ public class Main implements Constants {
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		
+		// GL11.glClearColor(0, 1, 0, 1);
+		
+		try {
+			AL.create(null, 15, 22050, true);
+		} catch (LWJGLException e) {
+			e.printStackTrace();
+		}
 		
 	}
 	

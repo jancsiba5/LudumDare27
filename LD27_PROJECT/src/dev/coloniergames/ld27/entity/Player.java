@@ -8,7 +8,6 @@ import org.lwjgl.input.Mouse;
 
 import dev.coloniergames.ld27.gfx.Animator;
 import dev.coloniergames.ld27.gfx.Camera;
-import dev.coloniergames.ld27.gfx.Sprite;
 import dev.coloniergames.ld27.util.TextureData;
 import dev.coloniergames.ld27.weapon.Projectile;
 
@@ -23,9 +22,6 @@ public class Player extends Entity {
 	public float speed = 0.2f;
 
 	public PlayerClass playerClass;
-	
-	public List<Projectile> projectiles = new ArrayList<Projectile>();
-	public List<Projectile> projectilesToRemove = new ArrayList<Projectile>();
 	
 	public Player(float x, float y) {
 
@@ -52,6 +48,14 @@ public class Player extends Entity {
 		float rot = (float) Math.atan2(xDistance, yDistance);
 		
 		setRotation(-rot);
+		
+		while(Mouse.next()) {
+			int button = Mouse.getEventButton();
+			
+			if(button == 0) {
+				if(Mouse.getEventButtonState()) playerClass.attack();
+			}
+		}
 		
 		while(Keyboard.next()) {
 
@@ -113,15 +117,8 @@ public class Player extends Entity {
 		if(mDown) setVelocity((float) (Math.sin(rotation)) * -speed * delta, (float) -(Math.cos(rotation)) * -speed * delta);
 		if(mLeft) setVelocity((float) -(Math.sin(rotation - Math.toRadians(90))) * -speed * delta, (float) (Math.cos(rotation - Math.toRadians(90))) * -speed * delta);
 		if(mRight) setVelocity((float) (Math.sin(rotation - Math.toRadians(90))) * -speed * delta, (float) -(Math.cos(rotation - Math.toRadians(90))) * -speed * delta);
-		if(mNo) setVelocity(0, 0);
-
-		for(Projectile p : projectiles) {
-			p.act(delta);
-			
-			if(p.ticksAlive >= p.type.maxTicks) projectilesToRemove.add(p);
-		}
-		
-		projectiles.removeAll(projectilesToRemove);
+		if(mNo) { setVelocity(0, 0); playerSprite.pauseAt(0); }
+		else playerSprite.play();
 		
 		playerClass.act(delta, gameTimer);
 	}
@@ -155,9 +152,6 @@ public class Player extends Entity {
 
 		sprite.draw();
 
-		for(Projectile p : projectiles) {
-			p.draw();
-		}
 	}
 
 	@Override

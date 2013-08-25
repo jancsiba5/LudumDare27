@@ -1,5 +1,7 @@
 package dev.coloniergames.ld27.level;
 
+import org.lwjgl.opengl.GL11;
+
 import dev.coloniergames.ld27.Constants;
 import dev.coloniergames.ld27.entity.Entity;
 import dev.coloniergames.ld27.game.Game;
@@ -37,7 +39,9 @@ public class MapChange implements Constants {
 	
 	public void draw() {
 		
+		GL11.glBlendFunc(GL11.GL_ONE, GL11.GL_ONE);
 		mcSprite.draw();
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		
 	}
 }

@@ -1,6 +1,11 @@
 package dev.coloniergames.ld27.entity;
 
-import dev.coloniergames.ld27.util.TextureData;
+import java.util.TimerTask;
+
+import dev.coloniergames.ld27.sfx.SoundData;
+import dev.coloniergames.ld27.sfx.SoundPlayer;
+import dev.coloniergames.ld27.weapon.Projectile;
+import dev.coloniergames.ld27.weapon.ProjectileType;
 
 public class PlayerWarrior extends PlayerClass {
 
@@ -25,6 +30,19 @@ public class PlayerWarrior extends PlayerClass {
 		
 		System.out.println("JUMP WARRIOR");
 		
+		float distance = 3 * BLOCK;
+		
+		float rotation = player.rotation;
+		
+		float vX = (float) -Math.sin(rotation) * distance;
+		float vY = (float) Math.cos(rotation) * distance;
+		
+		player.moveTo(player.position.x - vX, player.position.y - vY);
+		
+		// SoundData.jumpSound.play();
+		
+		SoundPlayer.playSound("res/sound/jump.wav", 0, 0, 0, 0, false);
+		
 	}
 
 	@Override
@@ -34,6 +52,11 @@ public class PlayerWarrior extends PlayerClass {
 
 	@Override
 	public void spell1() {
+		
+		player.projectiles.add(new Projectile(player.position.x, player.position.y, player.rotation, ProjectileType.JAVELIN, player));
+		// SoundData.javelinShootSound.play();
+		
+		SoundPlayer.playSound("res/sound/javelin_shoot.wav", 0, 0, 0, 0, 0.65f, 2f, false);
 		
 	}
 
@@ -52,4 +75,28 @@ public class PlayerWarrior extends PlayerClass {
 		
 	}
 
+	private class Spell1CDTask extends TimerTask {
+		public void run() {
+			s1R = true;
+		}
+	}
+
+	private class Spell2CDTask extends TimerTask {
+		public void run() {
+			s2R = true;
+		}
+	}
+
+	private class Spell3CDTask extends TimerTask {
+		public void run() {
+			s3R = true;
+		}
+	}
+
+	private class Spell4CDTask extends TimerTask {
+		public void run() {
+			s4R = true;
+		}
+	}
+	
 }

@@ -12,8 +12,15 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
-public class MapLoader {
+import dev.coloniergames.ld27.Constants;
+import dev.coloniergames.ld27.entity.Entity;
+import dev.coloniergames.ld27.entity.Mob;
+import dev.coloniergames.ld27.entity.NPC;
+import dev.coloniergames.ld27.game.Game;
 
+public class MapLoader implements Constants {
+
+	@SuppressWarnings("resource")
 	public static Map loadMap(String location) {
 		Map m = null;
 		
@@ -42,13 +49,16 @@ public class MapLoader {
 		
 		List<MapChange> mChs = new ArrayList<MapChange>();
 		List<Teleport> teles = new ArrayList<Teleport>();
+		List<Text> texts = new ArrayList<Text>();
+		List<Entity> entities = new ArrayList<Entity>();
+		
 		for(int x = 0; x < mapW; x++) {
 			for(int y = 0; y < mapH; y++) {
 				int rgba = image.getRGB(x, y);
 				Color c = new Color(rgba);
 				int red = c.getRed();
 				int green = c.getGreen();
-				int blue = c.getBlue();
+				// int blue = c.getBlue();
 				
 				BlockType type = null;
 				
@@ -57,8 +67,13 @@ public class MapLoader {
 				if(red == BlockType.BLOCK_HOUSE_WALL.r) type = BlockType.BLOCK_HOUSE_WALL;
 				if(red == BlockType.BLOCK_FLOOR.r) type = BlockType.BLOCK_FLOOR;
 				if(red == BlockType.BLOCK_WOOD.r) type = BlockType.BLOCK_WOOD;
+				if(red == BlockType.BLOCK_SPACE_FLOOR.r) type = BlockType.BLOCK_SPACE_FLOOR;
+				if(red == BlockType.BLOCK_SPACE_WINDOW.r) type = BlockType.BLOCK_SPACE_WINDOW;
+				if(red == BlockType.BLOCK_TREE.r) type = BlockType.BLOCK_TREE;
 				
 				if(green == 100) { sX = x; sY = y; }
+				if(green == 20) entities.add(new Mob(x * BLOCK, y * BLOCK, Game.player));
+				if(green == 50) entities.add(new NPC(x * BLOCK, y * BLOCK));
 				
 				blocks[x][y] = new Block(x, y, type);
 				
@@ -69,7 +84,11 @@ public class MapLoader {
 		try {
 			while((line = mapReader.readLine()) != null) {
 				
-				String[] splitted = line.split(" ");
+				if(line.startsWith("#")) continue;
+				
+				String[] firstSplitted = line.split(":");
+				
+				String[] splitted = firstSplitted[0].split(" ");
 				if(splitted[0].startsWith("teleport")) {
 					int tX = Integer.parseInt(splitted[1]);
 					int tY = Integer.parseInt(splitted[2]);
@@ -87,6 +106,26 @@ public class MapLoader {
 					mChs.add(new MapChange(x, y, asd));
 				}
 				
+				if(firstSplitted.length >= 2) {
+					if(splitted[0].startsWith("text")) {
+						int tX = Integer.parseInt(splitted[1]);
+						int tY = Integer.parseInt(splitted[2]);
+						
+						String msg = firstSplitted[1];
+						
+						texts.add(new Text(tX, tY, msg, true));
+						
+					}
+					
+					if(splitted[0].startsWith("textnd")) {
+						int tX = Integer.parseInt(splitted[1]);
+						int tY = Integer.parseInt(splitted[2]);
+						
+						String msg = firstSplitted[1];
+						
+						texts.add(new Text(tX, tY, msg, false));
+					}
+				}
 				
 				
 			}
@@ -94,7 +133,7 @@ public class MapLoader {
 			e.printStackTrace();
 		}
 		
-		m = new Map(mapW, mapH, blocks, mChs, teles, sX, sY);
+		m = new Map(mapW, mapH, blocks, mChs, teles, texts, entities, sX, sY);
 		
 		return m;
 	}

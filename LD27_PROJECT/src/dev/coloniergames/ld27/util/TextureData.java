@@ -11,7 +11,7 @@ public class TextureData {
 	private static SpriteSheet blockSheet = new SpriteSheet("res/texture/blockSheet.png", 32, 32, 8, 8);
 	private static SpriteSheet projectileSheet = new SpriteSheet("res/texture/projSheet.png", 32, 32, 8, 8);
 	private static SpriteSheet entitySheet = new SpriteSheet("res/texture/entitySheet.png", 32, 32, 8, 8);
-	private static SpriteSheet timerSheet = new SpriteSheet("res/texture/timer.png", 32, 32, 10, 1);
+	private static SpriteSheet timerSheet = new SpriteSheet("res/texture/timer.png", 32, 32, 11, 1);
 	static {
 		for(int i = 0; i < 8; i++) {
 			for(int j = 0; j < 8; j++) {

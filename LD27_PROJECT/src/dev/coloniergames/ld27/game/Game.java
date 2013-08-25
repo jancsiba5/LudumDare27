@@ -4,18 +4,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import javax.swing.JOptionPane;
+
 import org.lwjgl.opengl.GL11;
 
 import dev.coloniergames.ld27.Constants;
+import dev.coloniergames.ld27.collision.AABB;
 import dev.coloniergames.ld27.entity.Entity;
+import dev.coloniergames.ld27.entity.Mob;
 import dev.coloniergames.ld27.entity.Player;
 import dev.coloniergames.ld27.entity.PlayerMage;
 import dev.coloniergames.ld27.entity.PlayerWarrior;
 import dev.coloniergames.ld27.gfx.Animator;
+import dev.coloniergames.ld27.gfx.ParticleGenerator;
 import dev.coloniergames.ld27.gfx.Sprite;
 import dev.coloniergames.ld27.level.Map;
 import dev.coloniergames.ld27.level.MapLoader;
+import dev.coloniergames.ld27.sfx.SoundPlayer;
 import dev.coloniergames.ld27.util.TextureData;
+import dev.coloniergames.ld27.weapon.Projectile;
 
 public class Game implements Constants {
 
@@ -26,7 +33,7 @@ public class Game implements Constants {
 	static List<Entity> entities = new ArrayList<Entity>();
 	static List<Entity> entitiesToRemove = new ArrayList<Entity>();
 
-	static Player player;
+	public static Player player;
 
 	long lastFrame;
 
@@ -35,15 +42,24 @@ public class Game implements Constants {
 	Random random = new Random();
 
 	float red = 0, redAdd = 0.01f, blue = 1, blueAdd = 0.01f;
-	
+
 	public static boolean isChangeMapRequired = false;
-	
+
 	static String toBeLoaded = "";
-	
-	Animator timerAnimator = new Animator(0, 0, 32, 32, TextureData.timerTextures, 1000);
+
+	Animator timerAnimator = new Animator(0, 0, 64, 64, TextureData.timerTextures, 1000);
+
+	public List<Projectile> allProjectiles = new ArrayList<Projectile>();
+	public List<Projectile> projsToRemove = new ArrayList<Projectile>();
+	public List<ParticleGenerator> generators = new ArrayList<ParticleGenerator>();
+	public List<ParticleGenerator> gensToRemove = new ArrayList<ParticleGenerator>();
+
+	// ParticleGenerator testGenerator = new ParticleGenerator(100, 100, 1, 0, 1, 1000, 100);
 
 	public Game(){
 		init();
+		
+		
 	}
 
 	public void init() {
@@ -54,12 +70,18 @@ public class Game implements Constants {
 
 		s = new Sprite(50, 50, TextureData.testTexture);
 
-		player = new Player(0, 0);
-
-		changeMap("testMap");
+		newGame();
 
 		// entities.add(player);
 
+	}
+	
+	public void newGame() {
+		player = new Player(0, 0);
+		
+		changeMap("hub");
+		
+		SoundPlayer.playSound("res/sound/music.wav", 0, 0, 0, 0, 0.5f, 1, true);
 	}
 
 	public void pollInput() {
@@ -69,6 +91,10 @@ public class Game implements Constants {
 	}
 
 	public void tick() {
+		
+		gensToRemove.clear();
+
+		allProjectiles.clear();
 
 		delta = getDelta();
 
@@ -89,9 +115,15 @@ public class Game implements Constants {
 
 			gameTimer = 0;
 
+			// SoundData.changeSound.play();
+			
+			SoundPlayer.playSound("res/sound/change.wav", 0, 0, 0, 0, 0.35f, 1, false);
+
 		}
 
 		// s.rotate(0.01f);
+		
+		
 
 		for(Entity e : entities) {
 
@@ -100,9 +132,46 @@ public class Game implements Constants {
 
 			map.checkToMap(e);
 
-			e.move();
+			// e.move();
+
+			allProjectiles.addAll(e.projectiles);
 
 		}
+
+		for(Projectile p : allProjectiles) {
+
+			p.act(delta);
+			
+			if(p.ticksAlive >= p.type.maxTicks) {
+				p.canDamage = false;
+				projsToRemove.add(p);
+			}
+
+			for(Entity e : entities) {
+				if(AABB.collides(p.hitBox, e.hitBox) && p.owner != e) {
+					if(p.canDamage) {
+						e.health -= p.type.damage;
+						
+						generators.add(new ParticleGenerator(e.position.x, e.position.y, 0.75f, 0.05f, 0f, 50, 10));
+						
+						e.knockBack(p.rotation, p.type.knockBack);
+
+						// SoundData.hitSound.play();
+						
+						SoundPlayer.playSound("res/sound/hit.wav", 0, 0, 0, 0, false);
+					}
+
+					p.canDamage = false;
+					projsToRemove.add(p);
+
+					System.out.println("HIT AN ENEMY, GOT " + e.health + " HP LEFT.");
+				}
+
+				if(e.health <= 0) entitiesToRemove.add(e);
+			}
+		}
+
+		allProjectiles.removeAll(projsToRemove);
 
 
 		if(red >= 1) redAdd = -0.001f;
@@ -116,12 +185,30 @@ public class Game implements Constants {
 
 			entitiesToRemove.clear();
 		}
-		
+
 		if(isChangeMapRequired) {
 			changeMap(toBeLoaded);
 		}
 
+		// testGenerator.tick();
+
+		for(ParticleGenerator generator : generators) {
+			generator.tick();
+			
+			if(generator.ticksAlive >= generator.ticksMax) {
+				
+				gensToRemove.add(generator);
+				
+			}
+		}
+		
+		generators.removeAll(gensToRemove);
+		
+		System.out.println(generators.size() + "    " + allProjectiles.size());
+
 	}
+	
+	
 
 	public void renderGL() {
 
@@ -137,6 +224,15 @@ public class Game implements Constants {
 
 		}
 
+		for(Projectile p : allProjectiles) {
+			p.draw();
+		}
+
+		// testGenerator.draw();1
+		for(ParticleGenerator generator : generators) {
+			generator.draw();
+		}
+		
 		GL11.glPopMatrix();
 
 		GL11.glEnd();
@@ -223,33 +319,38 @@ public class Game implements Constants {
 
 		timerAnimator.draw();
 		
+
+
 		fps++;
 
 	}
 
 	public static void changeMap(String location) {
 
-
-		entities.clear();
-
 		Map m = MapLoader.loadMap(location);
 
 		player.moveTo(m.spawnX, m.spawnY);
 
-		entities.add(player);
+		entities.clear();
 
 		map = m;
 		
+		entities.add(player);
+		entities.addAll(map.entities);
+		
+		System.out.println(entities);
+
+
 		isChangeMapRequired = false;
-		
+
 	}
-	
+
 	public static void requireChange(String location) {
-		
+
 		isChangeMapRequired = true;
-		
+
 		toBeLoaded = location;
-		
+
 	}
 
 	public long getTime() {
